@@ -1,0 +1,12 @@
+apply plugin: 'java-library'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+  compile 'com.pi4j:pi4j-distribution:1.1'
+  testCompile 'junit:junit:4.12'
+
+}
+
