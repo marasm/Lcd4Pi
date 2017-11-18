@@ -3,8 +3,10 @@ package com.marasm.lcd4pi;
 import java.io.IOException;
 
 import com.marasm.lcd4pi.RealLCD.Direction;
+import com.marasm.logger.AppLogger;
+import com.pi4j.system.SystemInfo;
 
-public interface ILCD {
+public interface LCD {
 
 	void setText(String s) throws IOException;
 
@@ -43,5 +45,25 @@ public interface ILCD {
 	boolean isAutoScrollEnabled();
 
 	int buttonsPressedBitmask() throws IOException;
+	
+	
+	
+	public static LCD getInstance()
+	{
+	  //if running on the PI return real impl
+	  String hardware;
+	  try
+	  {
+	    hardware = SystemInfo.getHardware();
+	    AppLogger.debug("Hardware: " + hardware);
+	  }
+	  catch(Exception e)
+	  {
+	    AppLogger.warn("Error getting hardware! Assuming that this is not a PI");
+	  }
+	  
+	  //otherwise
+	  return new MockupLCD();
+	}
 
 }

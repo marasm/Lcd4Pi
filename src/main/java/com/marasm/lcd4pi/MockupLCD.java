@@ -30,7 +30,7 @@
  *
  * Copyright (C) Marcus Hirt, 2013
  */
-package com.marasm.lcd4pi.mocks;
+package com.marasm.lcd4pi;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -46,15 +46,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
-import com.marasm.lcd4pi.Button;
-import com.marasm.lcd4pi.ButtonListener;
-import com.marasm.lcd4pi.ButtonPressedObserver;
-import com.marasm.lcd4pi.Color;
-import com.marasm.lcd4pi.ILCD;
 import com.marasm.lcd4pi.RealLCD.Direction;
 import com.pi4j.io.i2c.I2CBus;
 
-public class MockupLCD implements ILCD {
+public class MockupLCD implements LCD {
 	private static final int DDRAM_SIZE = 40;
 	private volatile int cursorColumn;
 	private volatile int cursorRow;
@@ -68,12 +63,12 @@ public class MockupLCD implements ILCD {
 	private JFrame frame;
 	private Color color = Color.WHITE;
 	
-	public MockupLCD() {
+	MockupLCD() {
 		// This seems to be the default for AdaFruit 1115.
 		this(I2CBus.BUS_1, 0x20);
 	}
 
-	public MockupLCD(int bus, int address) {
+	MockupLCD(int bus, int address) {
 		this.bus = bus;
 		this.address = address;
 		initialize();

@@ -53,7 +53,7 @@ import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 
 
-public class RealLCD implements ILCD {
+public class RealLCD implements LCD {
 	public enum Direction {
 		LEFT, RIGHT;
 	}
@@ -117,12 +117,12 @@ public class RealLCD implements ILCD {
 	private int displayControl = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
 	private Color color = Color.WHITE;
 
-	public RealLCD() throws IOException, UnsupportedBusNumberException {
+	RealLCD() throws IOException, UnsupportedBusNumberException {
 		// This seems to be the default for AdaFruit 1115.
 		this(I2CBus.BUS_1, 0x20);
 	}
 
-	public RealLCD(int bus, int address) throws IOException, UnsupportedBusNumberException {
+  RealLCD(int bus, int address) throws IOException, UnsupportedBusNumberException {
 		i2cDevice = I2CFactory.getInstance(bus).getDevice(address);
 		initialize();
 	}

@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class ButtonPressedObserver {
 	private volatile boolean isRunning = false;
 	private final List<ButtonListener> buttonListeners = new LinkedList<ButtonListener>();
-	private final ILCD lcd;
+	private final LCD lcd;
 	private final long [] buttonDownTimes = new long[Button.values().length];
 	
 	private class ButtonChecker implements Runnable {
@@ -65,7 +65,7 @@ public class ButtonPressedObserver {
 
 	}
 
-	public ButtonPressedObserver(ILCD lcd) {
+	public ButtonPressedObserver(LCD lcd) {
 		this.lcd = lcd;
 	}
 

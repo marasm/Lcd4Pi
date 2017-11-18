@@ -3,7 +3,7 @@ package com.marasm.lcd4pi.demo;
 import java.io.IOException;
 
 import com.marasm.lcd4pi.Color;
-import com.marasm.lcd4pi.ILCD;
+import com.marasm.lcd4pi.LCD;
 
 public class ColorDemo implements LCDTest {
 
@@ -13,7 +13,7 @@ public class ColorDemo implements LCDTest {
 	}
 
 	@Override
-	public void run(ILCD lcd) throws IOException {
+	public void run(LCD lcd) throws IOException {
 		lcd.clear();
 		lcd.setText("Color changes:");
 		Util.sleep(1000);
