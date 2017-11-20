@@ -6,8 +6,8 @@ package com.marasm.lcd4pi;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import com.marasm.logger.AppLogger;
 
 
 public class ButtonPressedObserver {
@@ -35,8 +35,7 @@ public class ButtonPressedObserver {
 						}
 					}
 				} catch (IOException e) {
-					Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-							"Could not get buttons bitmask!", e);
+					AppLogger.error(	"Could not get buttons bitmask!", e);
 				}
 				sleep(15);
 				Thread.yield();
@@ -47,8 +46,7 @@ public class ButtonPressedObserver {
 			try {
 				Thread.sleep(time);
 			} catch (InterruptedException e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-						"Could not get buttons bitmask!", e);
+				AppLogger.error(	"Could not get buttons bitmask!", e);
 			}			
 		}
 
