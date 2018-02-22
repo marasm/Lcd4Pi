@@ -15,6 +15,7 @@ public class ButtonPressedObserver {
 	private final List<ButtonListener> buttonListeners = new LinkedList<ButtonListener>();
 	private final LCD lcd;
 	private final long [] buttonDownTimes = new long[Button.values().length];
+  private Thread thread;
 	
 	private class ButtonChecker implements Runnable {
 		@Override
@@ -80,19 +81,23 @@ public class ButtonPressedObserver {
 		isRunning = false;
 	}
 
-	public void addButtonListener(ButtonListener l) {
-		synchronized (buttonListeners) {
-			if (buttonListeners.isEmpty()) {
-				startButtonMonitor();
-			}
+	public Thread addButtonListener(ButtonListener l) {
+		synchronized (buttonListeners) 
+		{
 			buttonListeners.add(l);
+			return startButtonMonitor();
 		}
 	}
 
-	private void startButtonMonitor() {
-		isRunning = true;
-		Thread t = new Thread(new ButtonChecker(), "Button Checker");
-		t.setDaemon(true);
-		t.start();
+	private Thread startButtonMonitor() {
+	  if (thread == null)
+	    thread = new Thread(new ButtonChecker(), "Button Checker");
+	  if (!isRunning)
+	  {
+	    isRunning = true;
+	    thread.setDaemon(true);
+	    thread.start();
+	  }
+		return thread;
 	}
 }
