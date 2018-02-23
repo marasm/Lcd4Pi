@@ -47,6 +47,7 @@ package com.marasm.lcd4pi;
 
 import java.io.IOException;
 
+import com.marasm.logger.AppLogger;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
@@ -282,35 +283,44 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void stop() throws IOException {
+	public void stop() 
+	{
 		portA = 0xC0; // Turn off LEDs on the way out
 		portB = 0x01;
 		sleep(2);
-		i2cDevice.write(MCP23017_IOCON_BANK1, (byte) 0);
-		byte[] registers = { 0x3F, // IODIRA
-				(byte) ddrB, // IODIRB
-				0x0, // IPOLA
-				0x0, // IPOLB
-				0x0, // GPINTENA
-				0x0, // GPINTENB
-				0x0, // DEFVALA
-				0x0, // DEFVALB
-				0x0, // INTCONA
-				0x0, // INTCONB
-				0x0, // IOCON
-				0x0, // IOCON
-				0x3F, // GPPUA
-				0x0, // GPPUB
-				0x0, // INTFA
-				0x0, // INTFB
-				0x0, // INTCAPA
-				0x0, // INTCAPB
-				(byte) portA, // GPIOA
-				(byte) portB, // GPIOB
-				(byte) portA, // OLATA
-				(byte) portB // OLATB
-		};
-		i2cDevice.write(0, registers, 0, registers.length);
+		try
+		{
+		  i2cDevice.write(MCP23017_IOCON_BANK1, (byte) 0);
+		  byte[] registers = { 0x3F, // IODIRA
+		    (byte) ddrB, // IODIRB
+		    0x0, // IPOLA
+		    0x0, // IPOLB
+		    0x0, // GPINTENA
+		    0x0, // GPINTENB
+		    0x0, // DEFVALA
+		    0x0, // DEFVALB
+		    0x0, // INTCONA
+		    0x0, // INTCONB
+		    0x0, // IOCON
+		    0x0, // IOCON
+		    0x3F, // GPPUA
+		    0x0, // GPPUB
+		    0x0, // INTFA
+		    0x0, // INTFB
+		    0x0, // INTCAPA
+		    0x0, // INTCAPB
+		    (byte) portA, // GPIOA
+		    (byte) portB, // GPIOB
+		    (byte) portA, // OLATA
+		    (byte) portB // OLATB
+		  };
+		  i2cDevice.write(0, registers, 0, registers.length);
+		}
+		catch(IOException e)
+		{
+		  AppLogger.error("Failed to stop the LCD", e);
+		}
+		
 	}
 
 	private void sleep(long time) {

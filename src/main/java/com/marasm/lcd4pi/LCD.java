@@ -15,7 +15,7 @@ public interface LCD {
 
 	void setCursorPosition(int row, int column) throws IOException;
 
-	void stop() throws IOException;
+	void stop();
 
 	void clear() throws IOException;
 
