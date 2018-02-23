@@ -37,7 +37,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -237,7 +236,7 @@ public class MockupLCD implements LCD {
 	}
 
 	@Override
-	public Color getBacklight() throws IOException {
+	public Color getBacklight()   {
 		return color;
 	}
 }

@@ -3,7 +3,6 @@
  */
 package com.marasm.lcd4pi;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,7 +34,9 @@ public class ButtonPressedObserver {
 							buttonDownTimes[button.getPin()] = 0;
 						}
 					}
-				} catch (IOException e) {
+				} 
+				catch (Exception e) 
+				{
 					AppLogger.error(	"Could not get buttons bitmask!", e);
 				}
 				sleep(15);

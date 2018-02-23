@@ -118,7 +118,7 @@ public class RealLCD implements LCD {
 	private int displayControl = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
 	private Color color = Color.WHITE;
 
-	RealLCD() throws IOException, UnsupportedBusNumberException {
+	RealLCD() throws UnsupportedBusNumberException, IOException {
 		// This seems to be the default for AdaFruit 1115.
 		this(I2CBus.BUS_1, 0x20);
 	}
@@ -183,23 +183,30 @@ public class RealLCD implements LCD {
 		write(LCD_RETURNHOME);
 	}
 
-	private void write(int value) throws IOException {
-		waitOnLCDBusyFlag();
-		int bitmask = portB & 0x01; // Mask out PORTB LCD control bits
-
-		byte[] data = out4(bitmask, value);
-		i2cDevice.write(MCP23017_GPIOB, data, 0, 4);
-		portB = data[3];
-
-		// If a poll-worthy instruction was issued, reconfigure D7
-		// pin as input to indicate need for polling on next call.
-		if (value == LCD_CLEARDISPLAY || value == LCD_RETURNHOME) {
-			ddrB |= 0x10;
-			i2cDevice.write(MCP23017_IODIRB, (byte) ddrB);
-		}
+	private void write(int value) {
+		try
+    {
+		  waitOnLCDBusyFlag();
+		  int bitmask = portB & 0x01; // Mask out PORTB LCD control bits
+		  
+		  byte[] data = out4(bitmask, value);
+		  i2cDevice.write(MCP23017_GPIOB, data, 0, 4);
+		  portB = data[3];
+		  
+		  // If a poll-worthy instruction was issued, reconfigure D7
+		  // pin as input to indicate need for polling on next call.
+		  if (value == LCD_CLEARDISPLAY || value == LCD_RETURNHOME) {
+		    ddrB |= 0x10;
+		    i2cDevice.write(MCP23017_IODIRB, (byte) ddrB);
+		  }
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
 	}
 
-	private void waitOnLCDBusyFlag() throws IOException {
+	private void waitOnLCDBusyFlag() {
 		// The speed of LCD accesses is inherently limited by I2C through the
 		// port expander. A 'well behaved program' is expected to poll the
 		// LCD to know that a prior instruction completed. But the timing of
@@ -213,24 +220,31 @@ public class RealLCD implements LCD {
 		// are issued.
 
 		// If pin D7 is in input state, poll LCD busy flag until clear.
-		if ((ddrB & 0x10) != 0) {
-			int lo = (portB & 0x01) | 0x40;
-			int hi = lo | 0x20; // E=1 (strobe)
-			i2cDevice.write(MCP23017_GPIOB, (byte) lo);
-			while (true) {
-				i2cDevice.write((byte) hi); // Strobe high (enable)
-				int bits = i2cDevice.read(); // First nybble contains busy state
-				i2cDevice.write(MCP23017_GPIOB, new byte[] { (byte) lo,
-						(byte) hi, (byte) lo }, 0, 3); // Strobe low, high, low.
-														// Second nybble (A3) is
-														// ignored.
-				if ((bits & 0x02) == 0)
-					break; // D7=0, not busy
-			}
-			portB = lo;
-			ddrB &= 0xEF; // Polling complete, change D7 pin to output
-			i2cDevice.write(MCP23017_IODIRB, (byte) ddrB);
-		}
+	  try
+    {
+	    if ((ddrB & 0x10) != 0) {
+	      int lo = (portB & 0x01) | 0x40;
+	      int hi = lo | 0x20; // E=1 (strobe)
+	      i2cDevice.write(MCP23017_GPIOB, (byte) lo);
+	      while (true) {
+	        i2cDevice.write((byte) hi); // Strobe high (enable)
+	        int bits = i2cDevice.read(); // First nybble contains busy state
+	        i2cDevice.write(MCP23017_GPIOB, new byte[] { (byte) lo,
+	          (byte) hi, (byte) lo }, 0, 3); // Strobe low, high, low.
+	        // Second nybble (A3) is
+	        // ignored.
+	        if ((bits & 0x02) == 0)
+	          break; // D7=0, not busy
+	      }
+	      portB = lo;
+	      ddrB &= 0xEF; // Polling complete, change D7 pin to output
+	      i2cDevice.write(MCP23017_IODIRB, (byte) ddrB);
+	    }
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException(e);
+    }
 	}
 
 	private byte[] out4(int bitmask, int value) {
@@ -242,7 +256,7 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void setText(String s) throws IOException {
+	public void setText(String s) {
 		String[] str = s.split("\n");
 		for (int i = 0; i < str.length; i++) {
 			setText(i, str[i]);
@@ -250,12 +264,12 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void setText(int row, String string) throws IOException {
+	public void setText(int row, String string) {
 		setCursorPosition(row, 0);
 		internalWrite(string);
 	}
 
-	private void internalWrite(String s) throws IOException {
+	private void internalWrite(String s) {
 		int sLen = s.length();
 		int bytesLen = 4 * sLen;
 		if (sLen < 1) {
@@ -273,12 +287,19 @@ public class RealLCD implements LCD {
 				bytes[(i * 4) + j] = data[j];
 			}
 		}
-		i2cDevice.write(MCP23017_GPIOB, bytes, 0, bytesLen);
-		portB = bytes[bytesLen - 1];
+		try
+    {
+      i2cDevice.write(MCP23017_GPIOB, bytes, 0, bytesLen);
+      portB = bytes[bytesLen - 1];
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
 	}
 
 	@Override
-	public void setCursorPosition(int row, int column) throws IOException {
+	public void setCursorPosition(int row, int column) {
 		write(LCD_SETDDRAMADDR | (column + ROW_OFFSETS[row]));
 	}
 
@@ -332,17 +353,17 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void clear() throws IOException {
+	public void clear() {
 		write(LCD_CLEARDISPLAY);
 	}
 
 	@Override
-	public void home() throws IOException {
+	public void home() {
 		write(LCD_RETURNHOME);
 	}
 
 	@Override
-	public void setCursorEnabled(boolean enable) throws IOException {
+	public void setCursorEnabled(boolean enable) {
 		if (enable) {
 			displayControl |= LCD_CURSORON;
 			write(LCD_DISPLAYCONTROL | displayControl);
@@ -358,7 +379,7 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void setDisplayEnabled(boolean enable) throws IOException {
+	public void setDisplayEnabled(boolean enable) {
 		if (enable) {
 			displayControl |= LCD_DISPLAYON;
 			write(LCD_DISPLAYCONTROL | displayControl);
@@ -374,7 +395,7 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void setBlinkEnabled(boolean enable) throws IOException {
+	public void setBlinkEnabled(boolean enable) {
 		if (enable) {
 			displayControl |= LCD_BLINKON;
 			write(LCD_DISPLAYCONTROL | displayControl);
@@ -390,18 +411,25 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void setBacklight(Color color) throws IOException {
+	public void setBacklight(Color color) {
 		int c = ~color.getValue();
 		portA = (portA & 0x3F) | ((c & 0x03) << 6);
 		portB = (portB & 0xFE) | ((c & 0x04) >> 2);
 		// Has to be done as two writes because sequential operation is off.
-		i2cDevice.write(MCP23017_GPIOA, (byte) portA);
-		i2cDevice.write(MCP23017_GPIOB, (byte) portB);
-		this.color = color;
+		try
+    {
+      i2cDevice.write(MCP23017_GPIOA, (byte) portA);
+      i2cDevice.write(MCP23017_GPIOB, (byte) portB);
+      this.color = color;
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
  	}
 
 	@Override
-	public void scrollDisplay(Direction direction) throws IOException {
+	public void scrollDisplay(Direction direction) {
 		if (direction == Direction.LEFT) {
 			displayShift = LCD_DISPLAYMOVE | LCD_MOVELEFT;
 			write(LCD_CURSORSHIFT | displayShift);
@@ -412,7 +440,7 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void setTextFlowDirection(Direction direction) throws IOException {
+	public void setTextFlowDirection(Direction direction) {
 		if (direction == Direction.LEFT) {
 			// This is for text that flows right to left
 			displayMode &= ~LCD_ENTRYLEFT;
@@ -425,7 +453,7 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public void setAutoScrollEnabled(boolean enable) throws IOException {
+	public void setAutoScrollEnabled(boolean enable) {
 		if (enable) {
 			// This will 'right justify' text from the cursor
 			displayMode |= LCD_ENTRYSHIFTINCREMENT;
@@ -443,12 +471,19 @@ public class RealLCD implements LCD {
 	}
 
 	@Override
-	public int buttonsPressedBitmask() throws IOException {
-		return i2cDevice.read(MCP23017_GPIOA) & 0x1F;
+	public int buttonsPressedBitmask() {
+		try
+    {
+      return i2cDevice.read(MCP23017_GPIOA) & 0x1F;
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
 	}
 
 	@Override
-	public Color getBacklight() throws IOException {
+	public Color getBacklight() {
 		// Should probably read the registers instead of caching...
 		return color;
 	}

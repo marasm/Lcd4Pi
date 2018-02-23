@@ -9,43 +9,43 @@ import com.pi4j.system.SystemInfo;
 
 public interface LCD {
 
-	void setText(String s) throws IOException;
+	void setText(String s);
 
-	void setText(int row, String string) throws IOException;
+	void setText(int row, String string);
 
-	void setCursorPosition(int row, int column) throws IOException;
+	void setCursorPosition(int row, int column);
 
 	void stop();
 
-	void clear() throws IOException;
+	void clear();
 
-	void home() throws IOException;
+	void home();
 
-	void setCursorEnabled(boolean enable) throws IOException;
+	void setCursorEnabled(boolean enable);
 
 	boolean isCursorEnabled();
 
-	void setDisplayEnabled(boolean enable) throws IOException;
+	void setDisplayEnabled(boolean enable);
 
 	boolean isDisplayEnabled();
 
-	void setBlinkEnabled(boolean enable) throws IOException;
+	void setBlinkEnabled(boolean enable);
 
 	boolean isBlinkEnabled();
 
-	void setBacklight(Color color) throws IOException;
+	void setBacklight(Color color);
 
-	Color getBacklight() throws IOException;
+	Color getBacklight();
 
-	void scrollDisplay(Direction direction) throws IOException;
+	void scrollDisplay(Direction direction);
 
-	void setTextFlowDirection(Direction direction) throws IOException;
+	void setTextFlowDirection(Direction direction);
 
-	void setAutoScrollEnabled(boolean enable) throws IOException;
+	void setAutoScrollEnabled(boolean enable);
 
 	boolean isAutoScrollEnabled();
 
-	int buttonsPressedBitmask() throws IOException;
+	int buttonsPressedBitmask();
 	
 	
 	public static boolean isRunningOnPi()
