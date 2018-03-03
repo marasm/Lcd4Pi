@@ -15,24 +15,47 @@ public class ButtonPressedObserver {
 	private final LCD lcd;
 	private final long [] buttonDownTimes = new long[Button.values().length];
   private Thread thread;
+  private long sleepCounter = 0;
+  private static final long DISPLAY_SLEEP_THRESHOLD = 4000;
 	
 	private class ButtonChecker implements Runnable {
 		@Override
 		public void run() {
-			while (isRunning) {
-				try {
-					for (Button button : Button.values()) {
-						if (button.isButtonPressed(lcd.buttonsPressedBitmask())) {
-							if (buttonDownTimes[button.getPin()] != 0) {
+			while (isRunning) 
+			{
+				try 
+				{
+					for (Button button : Button.values()) 
+					{
+						if (button.isButtonPressed(lcd.buttonsPressedBitmask())) 
+						{
+							if (buttonDownTimes[button.getPin()] != 0) 
+							{
 								continue;
 							}
 							buttonDownTimes[button.getPin()] = System.currentTimeMillis();
-						} else if (buttonDownTimes[button.getPin()] != 0) {
-							if ((System.currentTimeMillis() - buttonDownTimes[button.getPin()]) > 15) {
+						} 
+						else if (buttonDownTimes[button.getPin()] != 0) 
+						{
+							if ((System.currentTimeMillis() - buttonDownTimes[button.getPin()]) > 15) 
+							{
+							  AppLogger.debug("Waking display");
+							  sleepCounter = 0;
+							  lcd.setDisplayEnabled(true);
 								fireNotification(button);
 							}
 							buttonDownTimes[button.getPin()] = 0;
 						}
+					}
+					sleepCounter++;
+					if (sleepCounter > DISPLAY_SLEEP_THRESHOLD) //~60 seconds
+					{
+					  AppLogger.debug("Putting display to sleep");
+					  lcd.setDisplayEnabled(false);
+					}
+					if (sleepCounter > Long.MAX_VALUE - 100)
+					{
+					  sleepCounter = DISPLAY_SLEEP_THRESHOLD;
 					}
 				} 
 				catch (Exception e) 
