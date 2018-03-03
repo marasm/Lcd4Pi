@@ -48,7 +48,8 @@ public class ButtonPressedObserver {
 						}
 					}
 					sleepCounter++;
-					if (sleepCounter > DISPLAY_SLEEP_THRESHOLD) //~60 seconds
+					if (lcd.isDisplayEnabled() &&
+					  sleepCounter > DISPLAY_SLEEP_THRESHOLD) //~60 seconds
 					{
 					  AppLogger.debug("Putting display to sleep");
 					  lcd.setDisplayEnabled(false);
