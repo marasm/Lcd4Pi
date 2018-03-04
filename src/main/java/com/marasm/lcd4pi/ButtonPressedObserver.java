@@ -41,18 +41,18 @@ public class ButtonPressedObserver {
 							{
 							  AppLogger.debug("Waking display");
 							  sleepCounter = 0;
-							  lcd.setDisplayEnabled(true);
+							  lcd.setBacklight(Color.ON);;
 								fireNotification(button);
 							}
 							buttonDownTimes[button.getPin()] = 0;
 						}
 					}
 					sleepCounter++;
-					if (lcd.isDisplayEnabled() &&
+					if (lcd.getBacklight() != Color.OFF &&
 					  sleepCounter > DISPLAY_SLEEP_THRESHOLD) //~60 seconds
 					{
 					  AppLogger.debug("Putting display to sleep");
-					  lcd.setDisplayEnabled(false);
+					  lcd.setBacklight(Color.OFF);;
 					}
 					if (sleepCounter > Long.MAX_VALUE - 100)
 					{

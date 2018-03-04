@@ -60,7 +60,7 @@ public class MockupLCD implements LCD {
 	private final int address;
 	private final JTextArea textArea = new JTextArea(2, 16);
 	private JFrame frame;
-	private Color color = Color.WHITE;
+	private Color color = Color.ON;
 	private boolean displayEnabled;
 	
 	MockupLCD() {
