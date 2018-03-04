@@ -61,6 +61,7 @@ public class MockupLCD implements LCD {
 	private final JTextArea textArea = new JTextArea(2, 16);
 	private JFrame frame;
 	private Color color = Color.WHITE;
+	private boolean displayEnabled;
 	
 	MockupLCD() {
 		// This seems to be the default for AdaFruit 1115.
@@ -76,6 +77,7 @@ public class MockupLCD implements LCD {
 	private void initialize() {
 		textArea.setEditable(false);
 		textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 24));
+		displayEnabled = true;
 		frame = new JFrame(String.format("LCD %d@%xd", bus, address));
 		frame.setSize(250, 180);
 		frame.getContentPane().add(textArea, BorderLayout.CENTER);
@@ -134,11 +136,13 @@ public class MockupLCD implements LCD {
 		return false;
 	}
 	@Override
-	public void setDisplayEnabled(boolean enable) {
+	public void setDisplayEnabled(boolean enable) 
+	{
+	  displayEnabled = enable;
 	}
 	@Override
 	public boolean isDisplayEnabled() {
-		return true;
+		return displayEnabled;
 	}
 	@Override
 	public void setBlinkEnabled(boolean enable) {
