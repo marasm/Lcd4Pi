@@ -120,7 +120,7 @@ public class RealLCD implements LCD {
 
 	RealLCD() throws UnsupportedBusNumberException, IOException {
 		// This seems to be the default for AdaFruit 1115.
-		this(I2CBus.BUS_1, 0x20);
+		this(I2CBus.BUS_0, 0x20);
 	}
 
   RealLCD(int bus, int address) throws IOException, UnsupportedBusNumberException {
