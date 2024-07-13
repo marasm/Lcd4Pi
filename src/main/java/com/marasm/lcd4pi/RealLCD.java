@@ -124,7 +124,9 @@ public class RealLCD implements LCD {
 	}
 
   RealLCD(int bus, int address) throws IOException, UnsupportedBusNumberException {
+    AppLogger.debug("About to call the I2C Factory.");
 		i2cDevice = I2CFactory.getInstance(bus).getDevice(address);
+    AppLogger.debug(".quired the i2c device. About to call initialize.");
 		initialize();
 	}
 
@@ -181,6 +183,7 @@ public class RealLCD implements LCD {
 		write(LCD_ENTRYMODESET | displayMode);
 		write(LCD_DISPLAYCONTROL | displayControl);
 		write(LCD_RETURNHOME);
+    AppLogger.debug("LCD initialized.");
 	}
 
 	private void write(int value) {
